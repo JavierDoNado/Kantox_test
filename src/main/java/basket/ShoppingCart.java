@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Implementation of Cart. This class has the management of the basket and the products
@@ -32,6 +33,20 @@ public class ShoppingCart implements Cart {
         this.pricingService = pricingService;
     }
 
+    @Override
+    public void changeDiscount(String productCode, Discount discount){
+        discountRelation.put(productCode, discount);
+        reCalculatePrice(productCode);
+    }
+
+    private void reCalculatePrice(String productCode){
+        CartItem cartItem = basket.get(productCode);
+        if(Objects.nonNull(cartItem)){
+            cartItem.setTotalPrice(getCartItemPrice(cartItem, productCode));
+            basket.put(productCode, cartItem);
+        }
+    }
+
     /**
      * Add a product to the basket
      * @param product Product to add
@@ -40,7 +55,7 @@ public class ShoppingCart implements Cart {
     @Override
     public Map<String, CartItem> addProduct(Product product) {
         CartItem cartInfo = basket.getOrDefault(product.getCode(),
-                CartItem.builder().quantity(0).productName(product.getName()).totalPrice(0.0).build());
+                CartItem.builder().quantity(0).priceByUnit(product.getPrice()).totalPrice(0.0).build());
         increaseCartInfo(cartInfo, product);
         basket.put(product.getCode(), cartInfo);
         return basket;
@@ -48,12 +63,12 @@ public class ShoppingCart implements Cart {
 
     private void increaseCartInfo(CartItem cartInfo, Product product){
         cartInfo.setQuantity(cartInfo.getQuantity()+1);
-        cartInfo.setTotalPrice(getCartItemPrice(cartInfo.getQuantity(), product));
+        cartInfo.setTotalPrice(getCartItemPrice(cartInfo, product.getCode()));
     }
 
-    private Double getCartItemPrice(int quantity, Product product){
-        return pricingService.calculatePrice(product.getPrice(), quantity,
-                discountRelation.getOrDefault(product.getCode(), null));
+    private Double getCartItemPrice(CartItem cartInfo, String product){
+        return pricingService.calculatePrice(cartInfo.getPriceByUnit(), cartInfo.getQuantity(),
+                discountRelation.getOrDefault(product, null));
     }
 
     /**

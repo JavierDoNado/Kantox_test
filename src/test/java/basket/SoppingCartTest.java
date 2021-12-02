@@ -26,6 +26,9 @@ public class SoppingCartTest {
     @Mock
     private Discount discount;
 
+    @Mock
+    private Discount discount2;
+
     @InjectMocks
     private ShoppingCart shoppingCart;
 
@@ -55,6 +58,19 @@ public class SoppingCartTest {
         shoppingCart.addProduct(grenTea);
 
         assertEquals(shoppingCart.getTotalPrice(),6.22);
+
+    }
+
+    @Test void changeDiscountTest(){
+
+        Product grenTea = Product.builder().code("GR1").name("Green tea").price(3.11).build();
+        when(pricingService.calculatePrice(3.11, 1,discount)).thenReturn(3.11);
+        when(pricingService.calculatePrice(3.11, 1,discount2)).thenReturn(2.1);
+
+        shoppingCart.addProduct(grenTea);
+        assertEquals(shoppingCart.getTotalPrice(),3.11);
+        shoppingCart.changeDiscount("GR1", discount2);
+        assertEquals(shoppingCart.getTotalPrice(),2.1);
 
     }
 

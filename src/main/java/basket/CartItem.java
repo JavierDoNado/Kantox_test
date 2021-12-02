@@ -9,7 +9,7 @@ import lombok.Data;
 @Builder
 @Data
 public class CartItem {
-    private  String productName;
+    private  double priceByUnit;
     private  int quantity;
     private  double totalPrice;
 }
