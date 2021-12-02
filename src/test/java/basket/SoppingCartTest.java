@@ -1,20 +1,45 @@
 package basket;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import pricing.PricingService;
+import discount.Discount;
 import product.Product;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import java.util.HashMap;
 import java.util.Map;
+import static org.mockito.Mockito.when;
 
-import static org.junit.jupiter.api.Assertions.*;
-
+@ExtendWith(MockitoExtension.class)
 public class SoppingCartTest {
 
-    private Cart shoppingCart;
+
+    @Mock
+    private PricingService pricingService;
+
+    @Mock
+    private Discount discount;
+
+    @InjectMocks
+    private ShoppingCart shoppingCart;
+
+    @BeforeEach
+    public void setUp(){
+        Map<String, Discount> discountByProduct = new HashMap<>();
+        discountByProduct.put("GR1", discount);
+        shoppingCart = new ShoppingCart(discountByProduct, pricingService);
+    }
 
     @Test
     public void addProductTest(){
-        shoppingCart = new ShoppingCart();
         Map<String, CartItem> basket;
-        Product grenTea = new Product("GR1", "Green tea", 3.11, null);
+        Product grenTea = Product.builder().code("GR1").name("Green tea").price(3.11).build();
         shoppingCart.addProduct(grenTea);
         basket = shoppingCart.addProduct(grenTea);
         assertFalse(basket.isEmpty());
@@ -23,11 +48,10 @@ public class SoppingCartTest {
 
     @Test
     public void totalPriceTest() {
-        shoppingCart = new ShoppingCart();
-
-        Product grenTea = new Product("GR1", "Green tea", 3.11, null);
+        Product grenTea = Product.builder().code("GR1").name("Green tea").price(3.11).build();
+        when(pricingService.calculatePrice(3.11, 2,discount)).thenReturn(6.22);
+        when(pricingService.calculatePrice(3.11, 1,discount)).thenReturn(3.11);
         shoppingCart.addProduct(grenTea);
-        grenTea = new Product("GR1", "Green tea", 3.11, null);
         shoppingCart.addProduct(grenTea);
 
         assertEquals(shoppingCart.getTotalPrice(),6.22);

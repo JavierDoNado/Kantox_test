@@ -27,8 +27,8 @@ public class BuyXGetYDiscountTest {
     @Test
     public void get8pay3Test(){
         Discount discount = new BuyXGetYDiscount(8,3);
-        assertEquals(discount.apply(8), 6);
-        assertEquals(discount.apply(15), 15);
+        assertEquals(discount.apply(8), 3);
+        assertEquals(discount.apply(15), 10);
         assertEquals(discount.apply(7), 7);
     }
 }

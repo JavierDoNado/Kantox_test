@@ -1,13 +1,13 @@
 package basket;
 
 import discount.Discount;
+import pricing.PricingService;
 import product.Product;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * Implementation of Cart. This class has the management of the basket and the products
@@ -16,11 +16,21 @@ import java.util.Objects;
  * If, for some reason, a product changes its discount rule, the price total of the item related with that product,
  * also will change
  */
+
 public class ShoppingCart implements Cart {
 
     private static final Integer DIGITS = 2;
 
     private final Map<String, CartItem> basket = new LinkedHashMap<>();
+
+    private final Map<String, Discount> discountRelation;
+
+    private final PricingService pricingService;
+
+    public ShoppingCart(Map<String, Discount> discountRelation, PricingService pricingService){
+        this.discountRelation = discountRelation;
+        this.pricingService = pricingService;
+    }
 
     /**
      * Add a product to the basket
@@ -42,10 +52,8 @@ public class ShoppingCart implements Cart {
     }
 
     private Double getCartItemPrice(int quantity, Product product){
-        Discount discount = product.getDiscount();
-        return Objects.nonNull(discount) ?
-                discount.apply(quantity) * product.getPrice() :
-                product.getPrice() * quantity;
+        return pricingService.calculatePrice(product.getPrice(), quantity,
+                discountRelation.getOrDefault(product.getCode(), null));
     }
 
     /**
