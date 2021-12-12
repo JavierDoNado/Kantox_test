@@ -1,5 +1,6 @@
 package basket;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,6 +11,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import pricing.PricingService;
 import discount.Discount;
 import product.Product;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import java.util.HashMap;
@@ -50,6 +53,13 @@ public class SoppingCartTest {
     }
 
     @Test
+    public void addNullProductTest(){
+        Map<String, CartItem> basket = new HashMap<>();
+        basket = shoppingCart.addProduct(null);
+        assertTrue(basket.isEmpty());
+    }
+
+    @Test
     public void totalPriceTest() {
         Product grenTea = Product.builder().code("GR1").name("Green tea").price(3.11).build();
         when(pricingService.calculatePrice(3.11, 2,discount)).thenReturn(6.22);
@@ -61,7 +71,8 @@ public class SoppingCartTest {
 
     }
 
-    @Test void changeDiscountTest(){
+    @Test
+    void changeDiscountTest(){
 
         Product grenTea = Product.builder().code("GR1").name("Green tea").price(3.11).build();
         when(pricingService.calculatePrice(3.11, 1,discount)).thenReturn(3.11);
@@ -71,6 +82,13 @@ public class SoppingCartTest {
         assertEquals(shoppingCart.getTotalPrice(),3.11);
         shoppingCart.changeDiscount("GR1", discount2);
         assertEquals(shoppingCart.getTotalPrice(),2.1);
+
+    }
+
+    @Test
+    void changeDiscountWithNotExistingProductTest(){
+        shoppingCart.changeDiscount("GR1", discount2);
+        assertEquals(shoppingCart.getTotalPrice(),0.0);
 
     }
 

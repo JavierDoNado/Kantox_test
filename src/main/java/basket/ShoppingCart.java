@@ -54,10 +54,12 @@ public class ShoppingCart implements Cart {
      */
     @Override
     public Map<String, CartItem> addProduct(Product product) {
-        CartItem cartInfo = basket.getOrDefault(product.getCode(),
-                CartItem.builder().quantity(0).priceByUnit(product.getPrice()).totalPrice(0.0).build());
-        increaseCartInfo(cartInfo, product);
-        basket.put(product.getCode(), cartInfo);
+        if(Objects.nonNull(product)) {
+            CartItem cartInfo = basket.getOrDefault(product.getCode(),
+                    CartItem.builder().quantity(0).priceByUnit(product.getPrice()).totalPrice(0.0).build());
+            increaseCartInfo(cartInfo, product);
+            basket.put(product.getCode(), cartInfo);
+        }
         return basket;
     }
 

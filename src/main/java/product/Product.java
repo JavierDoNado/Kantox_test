@@ -1,16 +1,14 @@
 package product;
 
 import discount.Discount;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class Product {
+    @NonNull
     private String code;
     private String name;
     private double price;
