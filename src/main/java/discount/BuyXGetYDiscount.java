@@ -1,6 +1,5 @@
 package discount;
 
-import lombok.AllArgsConstructor;
 
 /**
  * Implementation of discount interface.
@@ -8,11 +7,30 @@ import lombok.AllArgsConstructor;
  * The class has two attributes, one of them set the number of articles that we have to buy, the other, the number
  * of articles that we have to pay
  */
-@AllArgsConstructor
 public class BuyXGetYDiscount implements Discount {
+
+    private static final Integer MIN_NUM_ARTICLES = 1;
+    private static final Integer MIN_NUM_TO_PAY= 0;
+    private static final String MIN_NUM_ARTICLES_ERROR = "The minimum number of articles at least must be 1";
+    private static final String NUM_ARTICLES_TO_PAY_ERROR = "Articles to pay must be higher than the number of articles to buy";
+    private static final String MIN_NUM_TO_PAY_ERROR = "The number of articles to pay at least must be 0";
 
     private final int numArticles;
     private final int numToPay;
+
+    public BuyXGetYDiscount(int numArticles, int numToPay){
+        if(numArticles<MIN_NUM_ARTICLES){
+            throw new IllegalArgumentException(MIN_NUM_ARTICLES_ERROR);
+        }
+        if(numToPay<MIN_NUM_TO_PAY){
+            throw new IllegalArgumentException(MIN_NUM_TO_PAY_ERROR);
+        }
+        if(numArticles<=numToPay){
+            throw new IllegalArgumentException(NUM_ARTICLES_TO_PAY_ERROR);
+        }
+        this.numArticles = numArticles;
+        this.numToPay = numToPay;
+    }
 
     private boolean checkDiscount(int quantity) {
         return numArticles <= quantity;
